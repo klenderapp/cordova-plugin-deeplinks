@@ -118,6 +118,14 @@ function generateAssociatedDomainsContent(pluginPreferences) {
     }
   });
 
+  // generate list of webcredentials
+  pluginPreferences.webcredentials.forEach(function(credential) {
+    var link = domainsListEntryForWebCredential(credential);
+    if (domainsList.indexOf(link) == -1) {
+      domainsList.push(link);
+    }
+  });
+
   return domainsList;
 }
 
@@ -129,6 +137,16 @@ function generateAssociatedDomainsContent(pluginPreferences) {
  */
 function domainsListEntryForHost(host) {
   return 'applinks:' + host.name;
+}
+
+/**
+ * Generate domain record for the given credential.
+ *
+ * @param {Object} credential - credential entry
+ * @return {String} record
+ */
+function domainsListEntryForWebCredential(credential) {
+  return 'webcredentials:' + credential.name;
 }
 
 // endregion

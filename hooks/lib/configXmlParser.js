@@ -40,9 +40,12 @@ function readPreferences(cordovaContext) {
   // read ios team ID
   var iosTeamId = getTeamIdPreference(xmlPreferences);
 
+  // read hosts
+  var webcredentials = constructWebCredentialsList(xmlPreferences);
   return {
     'hosts': hosts,
-    'iosTeamId': iosTeamId
+    'iosTeamId': iosTeamId,
+    'webcredentials': webcredentials
   };
 }
 
@@ -113,6 +116,53 @@ function constructHostEntry(xmlElement) {
   host.paths = constructPaths(xmlElement);
 
   return host;
+}
+
+/**
+ * Construct list of credential objects, defined in xml file.
+ *
+ * @param {Object} xmlPreferences - plugin preferences from config.xml as JSON object
+ * @return {Array} array of JSON objects, where each entry defines credential data from config.xml.
+ */
+function constructWebCredentialsList(xmlPreferences) {
+  var credentialsList = [];
+
+  // look for defined credentials
+  var xmlCredentialList = xmlPreferences['credential'];
+  if (xmlCredentialList == null || xmlCredentialList.length == 0) {
+    return [];
+  }
+
+  xmlCredentialList.forEach(function(xmlElement) {
+    var credential = constructCredentialEntry(xmlElement);
+    if (credential) {
+      credentialsList.push(credential);
+    }
+  });
+
+  return credentialsList;
+}
+
+/**
+ * Construct host object from xml data.
+ *
+ * @param {Object} xmlElement - xml data to process.
+ * @return {Object} credential entry as JSON object
+ */
+function constructCredentialEntry(xmlElement) {
+  var credential = {
+      name: ''
+    };
+  var credentialProperties = xmlElement['$'];
+
+  if (credentialProperties == null || credentialProperties.length == 0) {
+    return null;
+  }
+
+  // read credential name
+  credential.name = credentialProperties.name;
+
+  return credential;
 }
 
 /**
